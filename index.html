@@ -2,44 +2,15 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>AI Chat - Agent Levels</title>
+<title>AI Chat - Role Based</title>
 
 <style>
-body {font-family: Arial; background:#f4f4f4; margin:0}
-.container {max-width:700px; margin:auto; padding:20px}
-
-.top {display:flex; gap:10px; margin-bottom:10px}
-
-.chat {
-  height:400px;
-  background:white;
-  overflow:auto;
-  padding:10px;
-  border-radius:8px
-}
-
-.msg {padding:8px; margin:5px 0; border-radius:6px}
-.user {background:#cfe2ff; text-align:right}
+body {font-family: Arial; background:#f4f4f4}
+.container {max-width:700px;margin:auto;padding:20px}
+.chat {height:400px;background:white;overflow:auto;padding:10px;border-radius:8px}
+.msg {padding:8px;margin:5px 0;border-radius:6px}
+.user {background:#cfe2ff;text-align:right}
 .ai {background:#e2e3e5}
-
-.bottom {display:flex; gap:10px; margin-top:10px}
-
-select, input, button {
-  padding:8px;
-}
-
-.credit {
-  margin-top:10px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.credit img {
-  width:32px;
-  height:32px;
-  border-radius:50%;
-}
 </style>
 </head>
 
@@ -47,59 +18,56 @@ select, input, button {
 
 <div class="container">
 
-<div class="top">
-  <select id="level">
-    <option value="1">Level 1 - Basic</option>
-    <option value="2">Level 2 - Advanced</option>
-    <option value="3">Level 3 - Agent</option>
-  </select>
-</div>
+<h3>Chọn quyền truy cập</h3>
+
+<select id="role">
+  <option value="1">User (Basic)</option>
+  <option value="2">Power User</option>
+  <option value="3">Admin (Agent)</option>
+</select>
+
+<button onclick="saveRole()">Lưu quyền</button>
 
 <div id="chat" class="chat"></div>
 
-<div class="bottom">
-  <input id="input" placeholder="Nhập tin nhắn..." style="flex:1">
-  <button onclick="send()">Gửi</button>
-</div>
-
-<div class="credit">
-  <img src="https://trangden.vn/agentsee/lop-hoc/api/avatars/2095_1774796696_md.jpg">
-  <span>Được tạo bởi Quy Tran</span>
-</div>
+<input id="input" placeholder="Nhập..." style="width:80%">
+<button onclick="send()">Gửi</button>
 
 </div>
 
 <script>
-let messages = [];
+let role = localStorage.getItem("role") || "1";
+
+function saveRole(){
+  role = document.getElementById("role").value;
+  localStorage.setItem("role", role);
+  alert("Đã lưu quyền");
+}
 
 function add(text,type){
   let div=document.createElement("div");
   div.className="msg "+type;
   div.innerText=text;
   document.getElementById("chat").appendChild(div);
-  document.getElementById("chat").scrollTop=9999;
 }
 
 function send(){
-  let text=document.getElementById("input").value.trim();
-  if(!text) return alert("Nhập nội dung!");
+  let text=document.getElementById("input").value;
+  if(!text) return;
 
   add(text,"user");
-  document.getElementById("input").value="";
 
-  let level = document.getElementById("level").value;
   let reply = "";
 
-  // 👉 PHÂN QUYỀN 3 CẤP ĐỘ
-
-  if(level == 1){
-    reply = "Trả lời ngắn: " + text;
+  // 👉 PHÂN QUYỀN THẬT
+  if(role == "1"){
+    reply = "Bạn chỉ có quyền chat cơ bản.";
   }
-  else if(level == 2){
-    reply = "Phân tích chi tiết:\n- Ý chính: " + text + "\n- Gợi ý: Bạn nên triển khai từng bước.";
+  else if(role == "2"){
+    reply = "Phân tích nâng cao: " + text;
   }
-  else if(level == 3){
-    reply = "AI Agent đang xử lý:\nTôi đã hiểu yêu cầu và đề xuất giải pháp hoàn chỉnh cho: " + text;
+  else if(role == "3"){
+    reply = "AI Agent xử lý: Tôi đã giải quyết yêu cầu: " + text;
   }
 
   setTimeout(()=>{
